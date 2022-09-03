@@ -68,6 +68,8 @@ include "../shared/Admin/head_include.php";
         </div>
       </div>
     </div>
+    <?php include "../Shared/Admin/notification_success.php"; ?>
+    <?php include "../Shared/Admin/notification_error.php"; ?>
     <div class="row ">
       <div class="col-xl-8 ">
         <div class="white_card mb_30 card_height_100">

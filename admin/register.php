@@ -1,5 +1,6 @@
 <?php
 
+session_start();
 if(isset($_POST["btn_register"]))
 {
     require_once  "../shared/connection.php";
@@ -22,11 +23,23 @@ if(isset($_POST["btn_register"]))
         $stmt->bindParam(':user_address', $user_address);
         $stmt->bindParam(':gender', $gender);
         $stmt->execute();
+        $_SESSION["success"] = "Admin registered successfully!";
+        header("location: login.php");
+        exit;
     }
     catch(PDOException $e)
     {
-        echo $e->getMessage();
+        if($e->errorInfo[1] == 1062)
+        {
+            $error = "Email already exists!";
+        }
+        else
+        {
+            $error = $e->getMessage();
+            // $error = "Something went wrong!";
+        }
     }
+    $conn = null;
 }
 
 $title = "Register";
@@ -81,37 +94,39 @@ include "../shared/Admin/head_include.php";
                                     <h5 class="modal-title text_white">Resister as Admin</h5>
                                 </div>
                                 <div class="modal-body">
+                                    <?php include "../Shared/Admin/notification_success.php"; ?>
+                                    <?php include "../Shared/Admin/notification_error.php"; ?>
                                     <form action="register.php" method="post">
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="full_name">Full Name</label>
-                                                <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Full Name" required maxlength="100">
+                                                <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Full Name" required maxlength="100" value="<?php echo isset($_POST["full_name"])? $_POST["full_name"]: "";  ?>">
                                             </div>
                                             <div class=" col-md-6">
                                                 <label class="form-label" for="contact_number">Contact Number</label>
-                                                <input type="tel" class="form-control" id="contact_number" name="contact_number" placeholder="0333-3333333" required maxlength="15"">
+                                                <input type="tel" class="form-control" id="contact_number" name="contact_number" placeholder="0333-3333333" required maxlength="15"  value="<?php echo isset($_POST["contact_number"])? $_POST["contact_number"]: "";  ?>">
                                             </div>
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-md-6">
                                                 <label class="form-label" for="email">Email Address</label>
-                                                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required maxlength="100">
+                                                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required maxlength="100" value="<?php echo isset($_POST["email"])? $_POST["email"]: "";  ?>">
                                             </div>
                                             <div class=" col-md-6">
                                                 <label class="form-label" for="password">Password</label>
-                                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required maxlength="20">
+                                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required maxlength="20" value="<?php echo isset($_POST["password"])? $_POST["password"]: "";  ?>">
                                             </div>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label" for="address">Address</label>
-                                            <input type="text" class="form-control" id="address" name="address" placeholder="1234 Main Street, Karachi, Pakistan" required maxlength="250">
+                                            <input type="text" class="form-control" id="address" name="address" placeholder="1234 Main Street, Karachi, Pakistan" required maxlength="250" value="<?php echo isset($_POST["address"])? $_POST["address"]: "";  ?>">
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-md-12">
                                                 <label class="form-label" for="gender">Gender</label>
                                                 <select id="gender" name="gender" class="form-control form-select">
-                                                    <option value="male">Male</option>
-                                                    <option value="female">Female</option>
+                                                    <option value="male" <?php echo isset($_POST["gender"])? ($_POST["gender"] == "male"? "selected": "") : "";  ?>>Male</option>
+                                                    <option value="female" <?php echo isset($_POST["gender"])? ($_POST["gender"] == "female"? "selected": "") : "";  ?>>Female</option>
                                                 </select>
                                             </div>
                                         </div>

@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// if not logged-in, redirect to login
+if(!isset($_SESSION["admin_id"]))
+{
+  header("location: login.php");
+  exit;
+}
 
 $title = "Home Page";
 $style = "

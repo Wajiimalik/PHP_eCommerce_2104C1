@@ -1,6 +1,14 @@
 <?php
 
 session_start();
+// if logged-in, redirect to index
+if(isset($_SESSION["admin_id"]))
+{
+  header("location: index.php");
+  exit;
+}
+
+
 if(isset($_POST["btn_register"]))
 {
     require_once  "../shared/connection.php";

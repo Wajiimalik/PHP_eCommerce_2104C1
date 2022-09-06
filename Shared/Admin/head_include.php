@@ -41,15 +41,18 @@
 
     <nav class="sidebar">
         <div class="logo d-flex justify-content-center p-1">
-            <a class="large_logo p-0" href="index.php"><img src="../Templates/Admin/img/j_store-logo.png" alt="" style="max-height: 100px;"></a>
-            <a class="small_logo" href="index.php"><img src="../Templates/Admin/img/j_store_small-logo.png" alt="" style="max-height: 80px;"></a>
+            <a class="large_logo p-0" href="index.php"><img src="../Templates/Admin/img/j_store-logo.png" alt="" style="height: 70px;"></a>
+            <a class="small_logo" href="index.php"><img src="../Templates/Admin/img/j_store_small-logo.png" alt="" style="height: 70px;"></a>
             <div class="sidebar_close_icon d-lg-none" style="margin-right: 50px;">
                 <i class="ti-close"></i>
             </div>
         </div>
         <ul id="sidebar_menu">
 
-            
+            <!-- links for non-logged-in users  -->
+            <?php
+            if (!isset($_SESSION["admin_id"])) {
+            ?>
                 <li class="">
                     <a href="login.php" aria-expanded="false">
                         <div class="nav_icon_small">
@@ -70,8 +73,14 @@
                         </div>
                     </a>
                 </li>
+            <?php
+            }
+            ?>
 
 
+            <?php
+            if (isset($_SESSION["admin_id"])) {
+            ?>
                 <!-- links for non-logged-in users  -->
                 <li class="">
                     <a href="index.php" aria-expanded="false">
@@ -157,12 +166,15 @@
                         </div>
                     </a>
                 </li>
+            <?php
+            }
+            ?>
         </ul>
     </nav>
 
     <section class="main_content dashboard_part large_header_bg">
 
-        <div class="container-fluid g-0">
+        <div   class="container-fluid g-0">
             <div class="row">
                 <div class="col-lg-12 p-0 ">
                     <div class="header_iner d-flex justify-content-between align-items-center">
@@ -184,6 +196,9 @@
                         </div>
                         <div class="header_right d-flex justify-content-between align-items-center">
                             <div class="header_notification_warp d-flex align-items-center">
+                                <?php
+                                if (!isset($_SESSION["admin_id"])) {
+                                ?>
                                     <li>
                                         <a title="Register" href="register.php"> <img src="../Templates/Admin/img/menu-icon/4.svg" alt="">
                                         </a>
@@ -192,14 +207,24 @@
                                         <a title="Login" href="login.php"> <img src="../Templates/Admin/img/menu-icon/8.svg" alt="">
                                         </a>
                                     </li>
+
+                                <?php
+                                }
+                                ?>
                             </div>
 
 
+                            <?php
+                            if (isset($_SESSION["admin_id"])) {
+                            ?>
                                 <div class="profile_info">
                                     <div class="main-title">
-                                        <h3 class="m-0">Hello, Someone</h3>
+                                        <h3 class="m-0">Hello, <?php echo $_SESSION["admin_name"]; ?></h3>
                                     </div>
                                 </div>
+                            <?php
+                            }
+                            ?>
                         </div>
                     </div>
                 </div>

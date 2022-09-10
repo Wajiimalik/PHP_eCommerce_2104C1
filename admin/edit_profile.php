@@ -20,13 +20,22 @@ try {
 if (isset($_POST["btn_edit_admin"])) {
     $name = $_POST["full_name"];
     $contact_num = $_POST["contact_number"];
-    $email_address = $_POST["email"];
-    $admin_password = $_POST["password"];
+    $admin_password = isset($_POST["password"])?$_POST["password"]:"";
     $user_address = $_POST["address"];
     $gender = $_POST["gender"];
 
     try {
-        $stmt = $conn->prepare("UPDATE tb_Admins SET name=:name, contact_num=:contact_num, user_address=:user_address, gender=:gender WHERE admin_id =:admin_id;");
+
+        if($admin_password == "")
+        {
+            $stmt = $conn->prepare("UPDATE tb_Admins SET name=:name, contact_num=:contact_num, user_address=:user_address, gender=:gender WHERE admin_id =:admin_id;");
+        }
+        else
+        {
+            $stmt = $conn->prepare("UPDATE tb_Admins SET name=:name, admin_password = :admin_password, contact_num=:contact_num, user_address=:user_address, gender=:gender WHERE admin_id =:admin_id;");
+            $hashPassword = password_hash($admin_password, PASSWORD_BCRYPT);
+            $stmt->bindParam(':admin_password', $hashPassword);
+        }
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':contact_num', $contact_num);
         $stmt->bindParam(':user_address', $user_address);

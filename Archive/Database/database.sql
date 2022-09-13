@@ -92,3 +92,14 @@ CREATE TABLE tb_Orders_Summary
 	FOREIGN KEY(order_id) REFERENCES tb_ORDERS(order_id),
 	FOREIGN KEY(product_id) REFERENCES tb_PRODUCTS(product_id)
 );
+
+INSERT INTO tb_admins (name, contact_num, email_address, admin_password, user_address, gender, join_date, updated_at, verified_user) VALUES('Winry Rockbell', '0334-3215576', 'winry@gmail.com', '$2y$10$inhHKjNhyhLb0Z4KeyKJGuvJlKr8JYSBuBk.swJNDihIsgKo7h9Ui', 'Gulshan-e-Iqbal, Karachi, Pakistan', 'female', '2022-07-22 15:54:36', '2022-07-22 15:54:36', b'0');
+
+INSERT INTO tb_categories (cat_id, cat_name, cat_image, inserted_at, updated_at, updated_by_admin) VALUES(1, 'Watches', NULL, '2022-07-22 16:10:56', '2022-07-22 16:10:56', 1);
+INSERT INTO tb_categories (cat_id, cat_name, cat_image, inserted_at, updated_at, updated_by_admin) VALUES(2, 'Bags & Wallets', NULL, '2022-07-22 16:11:25', '2022-07-22 16:11:25', 1);
+INSERT INTO tb_categories (cat_id, cat_name, cat_image, inserted_at, updated_at, updated_by_admin) VALUES(3, 'Clothing', NULL, '2022-07-22 16:12:34', '2022-07-22 16:12:34', 1);
+INSERT INTO tb_categories (cat_id, cat_name, cat_image, inserted_at, updated_at, updated_by_admin) VALUES(4, 'Shoes', NULL, '2022-07-22 16:12:48', '2022-07-22 16:12:48', 1);
+
+
+INSERT INTO tb_products (product_id, product_name, sku, product_image, long_description, price, stock, category_id, inserted_at, updated_at, updated_by_admin) VALUES (NULL, 'Blue Bag', '1234', '', NULL, '2500', '5', '2', current_timestamp(), current_timestamp(), '1');
+INSERT INTO tb_products (product_id, product_name, sku, product_image, long_description, price, stock, category_id, inserted_at, updated_at, updated_by_admin) VALUES (NULL, 'Orange White Shoes', '7895', '', NULL, '8500', '25', '4', current_timestamp(), current_timestamp(), '1');

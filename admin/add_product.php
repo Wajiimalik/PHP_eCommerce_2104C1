@@ -41,7 +41,7 @@ if (isset($_POST["btn_add_product"])) {
             $updated_at = date("Y-m-d H:i:s");
             $updated_by_admin = $_SESSION["admin_id"];
 
-            $stmt = $conn->prepare("INSERT INTO tb_Producdts (product_name, sku, product_image, long_description, price, stock, category_id, inserted_at, updated_at, updated_by_admin) VALUES (:product_name, :sku, :product_image, :long_description, :price, :stock, :category_id, :inserted_at, :updated_at, :updated_by_admin);");
+            $stmt = $conn->prepare("INSERT INTO tb_Products (product_name, sku, product_image, long_description, price, stock, category_id, inserted_at, updated_at, updated_by_admin) VALUES (:product_name, :sku, :product_image, :long_description, :price, :stock, :category_id, :inserted_at, :updated_at, :updated_by_admin);");
 
             $stmt->bindParam(':product_name', $product_name);
             $stmt->bindParam(':sku', $sku);
@@ -59,10 +59,13 @@ if (isset($_POST["btn_add_product"])) {
             exit;
         } else {
             throw new Exception($fileResult["msg"]);
-            // $error = $fileResult["msg"];
         }
     } catch (Exception $e) {
-        // if ($e->errorInfo[1] == 1062) {
+        // file uploaded succesfully but error in name or sku
+        if ($fileResult["status"] == "success") {
+            DeleteImage($fileResult["uploadedFile"]);
+        }
+
         $stmt = $conn->prepare("SELECT product_name FROM tb_Products WHERE product_name = :product_name;");
         $stmt->bindParam(':product_name', $product_name);
         $stmt->execute();
@@ -89,10 +92,6 @@ if (isset($_POST["btn_add_product"])) {
             $error .= $e->getMessage();
         }
         $error .= "</ul>";
-        // } else {
-
-        //     // $error = "Something went wrong!";
-        // }
     }
 }
 
@@ -166,7 +165,7 @@ include "../shared/Admin/head_include.php";
                                             <div class="row mb-3">
                                                 <label for="product_name" class="form-label col-sm-4 col-form-label">Product Name</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control" id="product_name" name="product_name" placeholder="Product Name" value="<?php echo isset($_POST["product_name"]) ? $_POST["product_name"] : "";  ?>">
+                                                    <input type="text" class="form-control" id="product_name" name="product_name" placeholder="Product Name" value="<?php echo isset($_POST["product_name"]) ? $_POST["product_name"] : "";  ?>" required maxlength="100">
                                                 </div>
                                             </div>
                                             <div class="row mb-3">
@@ -179,21 +178,23 @@ include "../shared/Admin/head_include.php";
                                                 <label for="category" class="form-label col-sm-4 col-form-label">Category</label>
                                                 <div class="col-sm-8">
                                                     <?php
-                                                    $cats = array();
+                                                    $categories_options = array();
                                                     foreach ($categories as $row) {
                                                         if (isset($_POST["category"])) {
                                                             if ($_POST["category"] == $row["cat_id"]) {
-                                                                array_push($cats, '<option value="' . $row["cat_id"] . '" selected>' . $row["cat_name"] . '</option>');
+                                                                array_push($categories_options, '<option value="' . $row["cat_id"] . '" selected>' . $row["cat_name"] . '</option>');
+                                                            } else {
+                                                                array_push($categories_options, '<option value="' . $row["cat_id"] . '">' . $row["cat_name"] . '</option>');
                                                             }
-                                                            continue;
+                                                        } else {
+                                                            array_push($categories_options, '<option value="' . $row["cat_id"] . '">' . $row["cat_name"] . '</option>');
                                                         }
-                                                        array_push($cats, '<option value="' . $row["cat_id"] . '">' . $row["cat_name"] . '</option>');
                                                     }
                                                     ?>
 
                                                     <select id="category" name="category" class="form-select form-control">
                                                         <?php
-                                                        foreach ($cats as $row) {
+                                                        foreach ($categories_options as $row) {
                                                             echo $row;
                                                         }
                                                         ?>
@@ -227,10 +228,18 @@ include "../shared/Admin/head_include.php";
                                             </div>
                                             <div class="row mb-3">
                                                 <label for="product_image" class="form-label col-sm-4 col-form-label">Product Image</label>
-                                                <div class="col-sm-8">
-                                                    <input type="file" class="form-control" id="image_file" name="image_file">
+                                                <div class="col-sm-5">
+                                                    <input type="file" class="form-control" id="image_file" name="image_file" onchange="ChangeShownImage(event)" value="<?php echo isset($_FILES['image_file']) ? $_FILES['image_file'] : "";  ?>">
                                                     <p class="text-primary">Only .jpg, .jpeg, .gif, .png formats allowed to a max size of 5 MB</p>
                                                 </div>
+                                                <div class="col-sm-3 text-center">
+                                                    <img src="../Templates//Admin//img//package.png" style="height: 120px" id="shownImage" />
+                                                </div>
+                                                <script>
+                                                    function ChangeShownImage(event) {
+                                                        document.getElementById("shownImage").src = URL.createObjectURL(event.target.files[0]);
+                                                    }
+                                                </script>
                                             </div>
                                             <div class="row mb-3">
                                                 <label for="long_description" class="form-label col-sm-4 col-form-label">Description</label>

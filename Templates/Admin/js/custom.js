@@ -345,11 +345,11 @@ $("#sidebar_menu >li a").filter(function() {
 
 if ($('.lms_table_active3').length) {
     $('.lms_table_active3').DataTable({
-        bLengthChange: false,
+        bLengthChange: false    ,
         "bDestroy": false,
         language: {
             search: "<i class='ti-search'></i>",
-            searchPlaceholder: 'Quick Search',
+            searchPlaceholder: 'Search here...',
             paginate: {
                 next: "<i class='ti-arrow-right'></i>",
                 previous: "<i class='ti-arrow-left'></i>"
@@ -359,9 +359,9 @@ if ($('.lms_table_active3').length) {
             visible: false
         }],
         responsive: true,
-        searching: false,
+        searching: true,
         info: true,
-        paging: true
+        paging: true,
     });
 }
 //   layout select

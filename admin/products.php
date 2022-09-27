@@ -58,7 +58,7 @@ include "../shared/Admin/head_include.php";
                     <div class="white_card_body">
                         <div class="QA_section">
                             <div class="QA_table">
-                                <table class="table">
+                                <table class="table" id="products_list">
                                     <!-- products_list -->
                                     <thead>
                                         <tr>
@@ -73,7 +73,7 @@ include "../shared/Admin/head_include.php";
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><img src="" width="50"></td>
+                                            <td><img src="../Uploads/02.png" width="50"></td>
                                             <th>
                                                 Apple
                                             </th>
@@ -88,7 +88,7 @@ include "../shared/Admin/head_include.php";
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><img src="" width="50"></td>
+                                            <td><img src="../Uploads/02.png" width="50"></td>
                                             <th>
                                                 Peach
                                             </th>

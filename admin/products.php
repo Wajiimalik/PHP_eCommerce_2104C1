@@ -1,5 +1,24 @@
 <?php
 
+// if not logged in, then can't access any page except login and register page
+session_start();
+if (!isset($_SESSION["admin_id"])) {
+    header("location: login.php");
+    exit;
+}
+
+require_once  "../shared/connection.php";
+try {
+    $stmt = $conn->prepare("SELECT P.product_id, P.product_name, P.sku, P.product_image, P.price, P.stock, C.cat_name FROM tb_Products P INNER JOIN tb_Categories C ON P.category_id = C.cat_id;");
+    $stmt->execute();
+    $result = $stmt->fetchAll();
+
+    // print_r($result);
+    // exit;
+} catch (PDOException $e) {
+    $error = $e->getMessage();
+}
+
 $title = "All Products";
 $style = "
   ";
@@ -31,6 +50,8 @@ include "../shared/Admin/head_include.php";
 
 <div class="main_content_iner overly_inner">
     <div class="container-fluid p-0">
+        <?php include "../shared/Admin/notification_success.php";  ?>
+        <?php include "../shared/Admin/notification_error.php";  ?>
         <div class="row">
             <div class="col-12">
                 <div class="page_title_box d-flex flex-wrap align-items-center justify-content-between">
@@ -72,36 +93,27 @@ include "../shared/Admin/head_include.php";
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td><img src="../Uploads/02.png" width="50"></td>
-                                            <th>
-                                                Apple
-                                            </th>
-                                            <td>25</td>
-                                            <td>34</td>
-                                            <td>23</td>
-                                            <td>123</td>
-                                            <td>
-                                                <i class="ti-eye"></i>
-                                                <i class="ti-pencil"></i>
-                                                <i class="ti-trash"></i>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td><img src="../Uploads/02.png" width="50"></td>
-                                            <th>
-                                                Peach
-                                            </th>
-                                            <td>34</td>
-                                            <td>12</td>
-                                            <td>1</td>
-                                            <td>125</td>
-                                            <td>
-                                                <i class="ti-eye"></i>
-                                                <i class="ti-pencil"></i>
-                                                <i class="ti-trash"></i>
-                                            </td>
-                                        </tr>
+                                        <?php
+                                        foreach ($result as $row) {
+                                        ?>
+                                            <tr>
+                                                <td><img src="<?php echo $row["product_image"]; ?>" width="50"></td>
+                                                <th>
+                                                <?php echo $row["product_name"]; ?>
+                                                </th>
+                                                <td><?php echo $row["price"]; ?></td>
+                                                <td><?php echo $row["stock"]; ?></td>
+                                                <td><?php echo $row["cat_name"]; ?></td>
+                                                <td><?php echo $row["sku"]; ?></td>
+                                                <td>
+                                                    <a href="view_product.php?id=<?php echo $row["product_id"]; ?>"><i class="ti-eye"></i></a>
+                                                    <a href="edit_product.php?id=<?php echo $row["product_id"]; ?>"><i class="ti-pencil"></i></a>
+                                                    <a href="#"><i class="ti-trash"></i></a>
+                                                </td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>

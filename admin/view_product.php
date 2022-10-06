@@ -1,6 +1,36 @@
 <?php
 
+// if not logged in, then can't access any page except login and register page
+session_start();
+if (!isset($_SESSION["admin_id"])) {
+    header("location: login.php");
+    exit;
+}
+
+// if not id passed, go to list page
+if (!isset($_GET["id"])) {
+    header("location: products.php");
+    exit;
+}
+
 $product_id = $_GET["id"];
+
+
+require_once  "../shared/connection.php";
+try {
+    $stmt = $conn->prepare("SELECT P.product_id, P.product_name, P.sku, P.product_image, P.price, P.stock, P.inserted_at, P.updated_at, P.long_description, C.cat_name , A.name
+        FROM tb_Products P INNER JOIN tb_Categories C ON P.category_id = C.cat_id 
+        INNER JOIN tb_Admins A ON A.admin_id = P.updated_by_admin
+            WHERE p.product_id = :product_id;");
+    $stmt->bindParam(':product_id', $product_id);
+    $stmt->execute();
+    $result = $stmt->fetch();
+
+    // print_r($result);
+    // exit;
+} catch (PDOException $e) {
+    $error = $e->getMessage();
+}
 
 $title = "Product Details";
 $style = "
@@ -64,43 +94,43 @@ include "../shared/Admin/head_include.php";
                                 <tbody>
                                     <tr>
                                         <th scope="row">Product Name</th>
-                                        <td></td>
+                                        <td><?php echo $result["product_name"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">SKU Code</th>
-                                        <td></td>
+                                        <td><?php echo $result["sku"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Product Image</th>
-                                        <td><img src="" alt="" height="200"></td>
+                                        <td><img src="<?php echo $result["product_image"]; ?>" alt="" height="200"></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Long Description</th>
-                                        <td></td>
+                                        <td><?php echo $result["long_description"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Price</th>
-                                        <td></td>
+                                        <td><?php echo $result["price"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Stock</th>
-                                        <td></td>
+                                        <td><?php echo $result["stock"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Category Name</th>
-                                        <td></td>
+                                        <td><?php echo $result["cat_name"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Inserted at</th>
-                                        <td></td>
+                                        <td><?php echo $result["inserted_at"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Updated at</th>
-                                        <td></td>
+                                        <td><?php echo $result["updated_at"]; ?></td>
                                     </tr>
                                     <tr>
                                         <th scope="row">Updated by Admin</th>
-                                        <td></td>
+                                        <td><?php echo $result["name"]; ?></td>
                                     </tr>
                                 </tbody>
                             </table>

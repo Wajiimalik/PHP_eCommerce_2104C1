@@ -8,15 +8,27 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 // if not id passed, go to list page
-if (!isset($_GET["id"])) {
+if (!(isset($_GET["id"]) || isset($_POST["product_id"]))) {
+    header("location: products.php");
+    exit;
+}
+if (isset($_GET["id"])) {
+    $product_id = $_GET["id"];
+}
+
+require_once  "../shared/connection.php";
+
+// delete product
+if (isset($_POST["btn_delete_product"])) {
+    $product_id = $_POST["product_id"];
+    $stmt = $conn->prepare("DELETE FROM tb_Products WHERE product_id=:product_id;");
+    $stmt->bindParam(':product_id', $product_id);
+    $stmt->execute();
+    $_SESSION["success"] = "Product deleted successfully!";
     header("location: products.php");
     exit;
 }
 
-$product_id = $_GET["id"];
-
-
-require_once  "../shared/connection.php";
 try {
     $stmt = $conn->prepare("SELECT P.product_id, P.product_name, P.sku, P.product_image, P.price, P.stock, P.inserted_at, P.updated_at, P.long_description, C.cat_name , A.name
         FROM tb_Products P INNER JOIN tb_Categories C ON P.category_id = C.cat_id 
@@ -137,12 +149,37 @@ include "../shared/Admin/head_include.php";
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary mb-3">Edit Product</button>
+                            <a href="edit_product.php?id=<?php echo $result["product_id"]; ?>" class="btn btn-secondary mb-3">Edit Product</a>
 
-                            <button type="button" class="btn btn-secondary mb-3">Delete Product</button>
+                            <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#view_delete_modal">Delete Product</button>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="view_delete_modal" tabindex="-1" role="dialog" aria-labelledby="view_delete_modalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="view_delete_modalTitle">Delete Product</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are yo sure you want to delete this product?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <form action="view_product.php" method="post">
+                    <input type="hidden" name="product_id" value="<?php echo $result["product_id"]; ?>">
+                    <button type="submit" class="btn btn-primary" name="btn_delete_product">Delete</button>
+                </form>
             </div>
         </div>
     </div>

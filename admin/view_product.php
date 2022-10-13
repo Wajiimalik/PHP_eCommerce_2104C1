@@ -8,26 +8,15 @@ if (!isset($_SESSION["admin_id"])) {
 }
 
 // if not id passed, go to list page
-if (!(isset($_GET["id"]) || isset($_POST["product_id"]))) {
+if (!(isset($_GET["id"]))) {
     header("location: products.php");
     exit;
 }
-if (isset($_GET["id"])) {
-    $product_id = $_GET["id"];
-}
+$product_id = $_GET["id"];
+
 
 require_once  "../shared/connection.php";
 
-// delete product
-if (isset($_POST["btn_delete_product"])) {
-    $product_id = $_POST["product_id"];
-    $stmt = $conn->prepare("DELETE FROM tb_Products WHERE product_id=:product_id;");
-    $stmt->bindParam(':product_id', $product_id);
-    $stmt->execute();
-    $_SESSION["success"] = "Product deleted successfully!";
-    header("location: products.php");
-    exit;
-}
 
 try {
     $stmt = $conn->prepare("SELECT P.product_id, P.product_name, P.sku, P.product_image, P.price, P.stock, P.inserted_at, P.updated_at, P.long_description, C.cat_name , A.name
@@ -43,6 +32,23 @@ try {
 } catch (PDOException $e) {
     $error = $e->getMessage();
 }
+
+
+// delete product
+if (isset($_GET["btn_delete_product"])) {
+    $stmt = $conn->prepare("DELETE FROM tb_Products WHERE product_id=:product_id;");
+    $stmt->bindParam(':product_id', $product_id);
+    $stmt->execute();
+
+    require_once  "../shared/image_upload.php";
+    DeleteImage($result["product_image"]);
+
+    $_SESSION["success"] = "Product deleted successfully!";
+    header("location: products.php");
+    exit;
+}
+
+
 
 $title = "Product Details";
 $style = "
@@ -176,8 +182,8 @@ include "../shared/Admin/head_include.php";
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
-                <form action="view_product.php" method="post">
-                    <input type="hidden" name="product_id" value="<?php echo $result["product_id"]; ?>">
+                <form action="view_product.php" method="get">
+                    <input type="hidden" name="id" value="<?php echo $result["product_id"]; ?>">
                     <button type="submit" class="btn btn-primary" name="btn_delete_product">Delete</button>
                 </form>
             </div>

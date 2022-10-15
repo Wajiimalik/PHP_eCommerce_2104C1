@@ -14288,7 +14288,8 @@ a.pswp__share--download:hover {
   color: #fff !important;
 }
 
-.input-group-text, .form-control::file-selector-button {
+.input-group-text,
+.form-control::file-selector-button {
   background-color: #810682 !important;
   color: white;
 }
@@ -14407,37 +14408,31 @@ a.pswp__share--download:hover {
   background-color: white !important;
 }
 
-thead tr
-{
+thead tr {
   background-color: #810682;
 }
 
-thead tr th
-{
+thead tr th {
   color: white !important;
   border-radius: 0px !important;
 }
 
-tbody td
-{
+tbody td {
   color: #212529 !important;
 }
 
-.dataTables_info
-{
+.dataTables_info {
   color: #810682 !important;
 }
 
-.dt_name
-{
+.dt_name {
   color: #3dba1a;
   border: none;
   background-color: transparent;
   font-weight: bold;
 }
 
-.dt_icon
-{
+.dt_icon {
   font-size: 1em;
   margin-right: 0px;
   color: #3dba1a;
@@ -14445,17 +14440,26 @@ tbody td
   background-color: transparent;
 }
 
-.dt_icon:hover, .dt_name:hover
-{
+.dt_icon:hover,
+.dt_name:hover {
   color: #810682;
 }
 
-td form
-{
+td form {
   display: inline-block;
 }
 
-.sidebar
-{
+.sidebar {
   position: absolute;
+}
+
+.list_name {
+  color: #3dba1a;
+  text-transform: capitalize;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.list_name:hover {
+  color: #810682;
 }

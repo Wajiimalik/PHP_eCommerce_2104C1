@@ -36,16 +36,20 @@ try {
 
 // delete product
 if (isset($_GET["btn_delete_product"])) {
-    $stmt = $conn->prepare("DELETE FROM tb_Products WHERE product_id=:product_id;");
-    $stmt->bindParam(':product_id', $product_id);
-    $stmt->execute();
+    try {
+        $stmt = $conn->prepare("DELETE FROM tb_Products WHERE product_id=:product_id;");
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->execute();
 
-    require_once  "../shared/image_upload.php";
-    DeleteImage($result["product_image"]);
+        require_once  "../shared/image_upload.php";
+        DeleteImage($result["product_image"]);
 
-    $_SESSION["success"] = "Product deleted successfully!";
-    header("location: products.php");
-    exit;
+        $_SESSION["success"] = "Product deleted successfully!";
+        header("location: products.php");
+        exit;
+    } catch (PDOException $e) {
+        $error = $e->getMessage();
+    }
 }
 
 

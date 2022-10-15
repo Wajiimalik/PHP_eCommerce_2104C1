@@ -19,6 +19,32 @@ try {
     $error = $e->getMessage();
 }
 
+
+if (isset($_POST["btn_delete_product"])) {
+    $product_id = $_POST["id"];
+
+    try {
+        $stmt = $conn->prepare("SELECT product_image FROM tb_Products WHERE product_id=:product_id;");
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->execute();
+        $product_image = $stmt->fetch();
+        
+
+        $stmt = $conn->prepare("DELETE FROM tb_Products WHERE product_id=:product_id;");
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->execute();
+
+        require_once  "../shared/image_upload.php";
+        DeleteImage($product_image["product_image"]);
+
+        $_SESSION["success"] = "Product deleted successfully!";
+        header("location: products.php");
+        exit;
+    } catch (PDOException $e) {
+        $error = $e->getMessage();
+    }
+}
+
 $title = "All Products";
 $style = "
   ";
@@ -99,16 +125,16 @@ include "../shared/Admin/head_include.php";
                                             <tr>
                                                 <td><img src="<?php echo $row["product_image"]; ?>" width="50"></td>
                                                 <th>
-                                                <?php echo $row["product_name"]; ?>
+                                                   <a class="list_name" href="view_product.php?id=<?php echo $row["product_id"]; ?>"><?php echo $row["product_name"]; ?></a>
                                                 </th>
                                                 <td><?php echo $row["price"]; ?></td>
                                                 <td><?php echo $row["stock"]; ?></td>
                                                 <td><?php echo $row["cat_name"]; ?></td>
                                                 <td><?php echo $row["sku"]; ?></td>
                                                 <td>
-                                                    <a href="view_product.php?id=<?php echo $row["product_id"]; ?>"><i class="ti-eye"></i></a>
-                                                    <a href="edit_product.php?id=<?php echo $row["product_id"]; ?>"><i class="ti-pencil"></i></a>
-                                                    <a href="#"><i class="ti-trash"></i></a>
+                                                    <a class="dt_icon" href="view_product.php?id=<?php echo $row["product_id"]; ?>"><i class="ti-eye"></i></a>
+                                                    <a class="dt_icon" href="edit_product.php?id=<?php echo $row["product_id"]; ?>"><i class="ti-pencil"></i></a>
+                                                    <a class="dt_icon" href="#" onclick="OpenDeleteModal(<?php echo $row['product_id']; ?>)"><i class="ti-trash"></i></a>
                                                 </td>
                                             </tr>
                                         <?php
@@ -120,6 +146,32 @@ include "../shared/Admin/head_include.php";
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="view_delete_modal" tabindex="-1" role="dialog" aria-labelledby="view_delete_modalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="view_delete_modalTitle">Delete Product</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are yo sure you want to delete this product?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <form action="products.php" method="post">
+                    <input type="hidden" name="id" id="delete_product_id" value="">
+                    <button type="submit" class="btn btn-primary" name="btn_delete_product">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -152,8 +204,13 @@ $scriptList = [
     '<script src="../module_js_scripts/Admin/products.js"></script>',
 ];
 
-$footScript = "
-  ";
+$footScript = '
+    function OpenDeleteModal(id)
+    {
+        $("#delete_product_id").attr("value", id);
+        $("#view_delete_modal").modal("show");
+    }
+  ';
 
 include "../shared/Admin/foot_include.php";
 ?>
